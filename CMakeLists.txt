@@ -1,0 +1,13 @@
+PROJECT(libmcv)
+cmake_minimum_required(VERSION 2.8)
+
+SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/build)
+SET(Image ./src/modules/Image/Image.cpp)
+ADD_LIBRARY(Image SHARED ${Image})
+FIND_LIBRARY(LIBJPEG libjpeg.so ./lib/libjpeg-turbo/build/.libs)
+IF(LIBJPEG)
+    TARGET_LINK_LIBRARIES(Image ${LIBJPEG})
+ELSE()
+    MESSAGE(STATUS "libjpeg-turbo not built yet")
+ENDIF()
+MESSAGE("cmake complete, use make to compile!")

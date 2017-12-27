@@ -65,7 +65,6 @@ extern "C" {
 
 /* Data structures for images (arrays of samples and of DCT coefficients).
  */
-typedef unsigned char JSAMPLE;
 typedef JSAMPLE *JSAMPROW;      /* ptr to one image row of pixel samples. */
 typedef JSAMPROW *JSAMPARRAY;   /* ptr to some rows (a 2-D sample array) */
 typedef JSAMPARRAY *JSAMPIMAGE; /* a 3-D sample array: top index is color */

@@ -1,10 +1,6 @@
 #ifndef _LIBMCV_MODULES_IMAGE_H_
 #define _LIBMCV_MODULES_IMAGE_H_
 
-#ifndef JPEG_LIB_VERSION
-#define JPEG_LIB_VERSION 80
-#endif
-
 #ifndef _LIBMCV_DEV_MODE
 #define _LIBMCV_DEV_MODE TRUE
 #endif
