@@ -78,7 +78,7 @@ matrix:
       compiler: clang
 
 install:
-  - sudo apt-get install autoconf
+  - sudo apt-get install autoconf nasm
   - chmod +x ./scripts/build_libjpeg.sh
 
 script:
