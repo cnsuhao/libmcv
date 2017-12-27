@@ -78,9 +78,10 @@ matrix:
       compiler: clang
 
 install:
+  - sudo apt-get install autoconf
   - chmod +x ./scripts/build_libjpeg.sh
 
 script:
-  - mkdir build
+  - mkdir build && cd build
   - cmake ..
   - make
