@@ -1,1 +1,1 @@
-clang++ -std=c++11 loadImage.cpp -L ../build/ -lImage -o loadImage
+clang++ -std=c++11 loadImage.cpp -L ../build/ -lmcv -o loadImage

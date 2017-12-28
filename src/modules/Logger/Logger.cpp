@@ -16,14 +16,14 @@ Logger::Logger() {
             console->info("Logfile will be stored at logs/libmcv.log");
         }
     }
-    catch {
-        
+    catch (const spdlog::spdlog_ex & ex) {
+        std::cout<<"Logger Failed to Initialize: "<< ex.what() << std::endl; 
     }
 }
 
-static std::shared_ptr<spdlog::logger> Logger::getLogger() {
+std::shared_ptr<spdlog::logger> Logger::getLogger() {
     if(console == NULL ) {
-        console = new Logger();
+        new Logger();
     }
     return console;
 }
