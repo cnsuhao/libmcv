@@ -1,0 +1,1 @@
+clang++ -std=c++11 loadImage.cpp -L ../build/ -lmcvImage -lmcvLogger -o loadImage

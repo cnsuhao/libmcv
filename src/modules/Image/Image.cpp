@@ -18,6 +18,7 @@ unsigned int Image::getSize() {
 
 unsigned char* Image::loadFile(std::string filename) {
     // Only Support JPEG File right away
+
     struct jpeg_decompress_struct cinfo;
     struct libmcv_jpeg_error_mgr jerr;
 
@@ -27,11 +28,14 @@ unsigned char* Image::loadFile(std::string filename) {
     int rgb_size;
     unsigned char * tmp_buffer = NULL;
 
+    std::shared_ptr<spdlog::logger> logger = Logger::getLogger();
+
+
     if(NULL == (infile=fopen(filename.c_str(),"rb"))) {
         printf("can't open %s\n", filename.c_str());
         return NULL;
     }
-    
+    logger->info("message");
     cinfo.err = jpeg_std_error(&jerr.pub);
     jerr.pub.error_exit = libmcv_jpeg_error_exit;
     

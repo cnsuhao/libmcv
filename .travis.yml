@@ -9,7 +9,7 @@ env:
 
 notifications:
   slack: boostedai:ntjYiPx1Gpd1Jn1qOrEbv3sW
-  webhooks: https://zt-webhook.herokuapp.com/travis/Qti6MnH9KZ  
+  webhooks: https://zt-webhook.herokuapp.com/travis/AJHLtFto5K  
 
 addons:
   apt:
