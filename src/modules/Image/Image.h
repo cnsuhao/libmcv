@@ -2,7 +2,7 @@
 #define _LIBMCV_MODULES_IMAGE_H_
 
 #ifndef _LIBMCV_DEV_MODE
-#define _LIBMCV_DEV_MODE TRUE
+#define _LIBMCV_DEV_MODE true
 #endif
 
 #include <iostream>
@@ -13,6 +13,7 @@
 
 #include "../../../lib/libjpeg-turbo/jpeglib.h"
 #include "../../../lib/libjpeg-turbo/jerror.h"
+#include "../Logger/Logger.h"
 
 struct libmcv_jpeg_error_mgr {
     struct jpeg_error_mgr pub;
@@ -27,7 +28,7 @@ void libmcv_jpeg_error_exit(j_common_ptr cinfo) {
     longjmp(libmcv_jpeg_error->setjmp_buffer,1);
 }
 
-class Image{
+class Image {
 private:
     unsigned int width;
     unsigned int height;

@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 2.8)
+add_definitions(-std=c++17)
+aux_source_directory(. DIR_LOGGER_SRCS)
+SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/build)
+SET(Logger ./src/modules/Logger/Logger.cpp)
+ADD_LIBRARY(Logger SHARED ${DIR_LOGGER_SRCS})
+MESSAGE("Logger CMake Completed")
