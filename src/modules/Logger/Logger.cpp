@@ -1,5 +1,7 @@
 #include "Logger.h"
 
+
+
 Logger::Logger() {
     try {
         if(_LIBMCV_DEV_MODE) {
@@ -27,3 +29,5 @@ std::shared_ptr<spdlog::logger> Logger::getLogger() {
     }
     return console;
 }
+
+std::shared_ptr<spdlog::logger> Logger::console;
