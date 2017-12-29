@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8)
-add_definitions(-std=c++17)
+add_definitions(-std=c++14)
 aux_source_directory(. DIR_IMAGE_SRCS)
 SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/build)
 ADD_LIBRARY(mcvImage SHARED ${DIR_IMAGE_SRCS})
