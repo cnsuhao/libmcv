@@ -40,7 +40,6 @@ unsigned char* Image::loadFile(std::string filename) {
     
     cinfo.err = jpeg_std_error(&jerr.pub);
     jerr.pub.error_exit = libmcv_jpeg_error_exit;
-        logger->info("error heppened");
 
     if(setjmp(jerr.setjmp_buffer)) {
         jpeg_destroy_decompress(&cinfo);
@@ -59,9 +58,7 @@ unsigned char* Image::loadFile(std::string filename) {
     // Total Size
     rgb_size = row_stride * cinfo.output_components;
     this->size = rgb_size;
-    logger->info("Setting buffer");
     buffer = (*cinfo.mem->alloc_sarray)((j_common_ptr) &cinfo, JPOOL_IMAGE, row_stride,1);
-    logger->info("seted buffer");
     // Allocate Memory
     if(cinfo.output_components == 3) {
         this->_isGray = false;
@@ -70,12 +67,7 @@ unsigned char* Image::loadFile(std::string filename) {
         this->_isGray = true;
         this->data = new unsigned char[width*height+1];
     }
-    // Print Result if it is in Debug Mode
-        logger->info("image loaded: rgb_size: {:08d}, size {:08d}, width: {:08d}, height: {:08d}, row_stride: {:08d}",rgb_size,
-        cinfo.image_width*cinfo.image_height*3,
-        cinfo.image_width,
-        cinfo.image_height,
-        row_stride);
+
     while(cinfo.output_scanline < cinfo.output_height) {
         // get every line
         jpeg_read_scanlines(&cinfo, buffer, 1);
@@ -89,7 +81,12 @@ unsigned char* Image::loadFile(std::string filename) {
             }
         }
     }
-    logger->info("image load finished!");
+    // Print Result if it is in Debug Mode
+    logger->info("image loaded: rgb_size: {:05d}, size {:08d}, width: {:05d}, height: {:05d}, row_stride: {:05d}",rgb_size,
+        cinfo.image_width*cinfo.image_height*3,
+        cinfo.image_width,
+        cinfo.image_height,
+        row_stride);
     jpeg_finish_decompress(&cinfo);
     jpeg_destroy_decompress(&cinfo);
     fclose(infile);
