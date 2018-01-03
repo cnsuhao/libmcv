@@ -1,1 +1,1 @@
-clang++ -std=c++11 -I/home/sfermi/Documents/code/libmcv/lib/ -O3 train.cpp -o train
+clang++ -std=c++14 -I/home/sfermi/Documents/code/libmcv/lib/ -O3 train.cpp -o train -pthread
