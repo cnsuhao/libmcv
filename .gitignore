@@ -1,4 +1,12 @@
+<<<<<<< HEAD
 .idea
 build/
 cmake-build-debug/
 lib/
+=======
+.idea
+build/
+cmake-build-debug/
+lib/
+examples/
+>>>>>>> caa8239571e8d2fc6e57a4cc0ef865453b55041d
