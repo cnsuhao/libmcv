@@ -1,7 +1,7 @@
 #include "Common.h"
 MnistClassifier::MnistClassifier() {
     this->logger = Logger::getLogger();
-    tbl = {
+    bool table_data[] = {
         // clang-format off
         true, false, false, false, true, true, true, false, false, true, true, true, true, false, true, true,
         true, true, false, false, false, true, true, true, false, false, true, true, true, true, false, true,
@@ -11,6 +11,7 @@ MnistClassifier::MnistClassifier() {
         false, false, false, true, true, true, false, false, true, true, true, true, false, true, true, true
         // clang-format on
     };
+    this->tbl = table_data;
 }
 
 MnistClassifier::MnistClassifier(tiny_dnn::core::backend_t backend_type) {
@@ -79,4 +80,8 @@ void MnistClassifier::train(const int n_train_epochs, const int n_minibatch, dou
     };
     nn.train<tiny_dnn::mse>(optimizer, train_images,train_labels, n_minibatch, n_train_epochs, on_enumerate_minibatch, on_enumerate_epoch);
     nn.test(test_images, test_labels).print_detail(std::cout);
+}
+
+MnistClassifier::~MnistClassifier() {
+    
 }
