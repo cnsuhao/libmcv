@@ -1,6 +1,7 @@
 #include "Common.h"
 MnistClassifier::MnistClassifier() {
-    tbl[]= {
+    this->logger = Logger::getLogger();
+    tbl = {
         // clang-format off
         true, false, false, false, true, true, true, false, false, true, true, true, true, false, true, true,
         true, true, false, false, false, true, true, true, false, false, true, true, true, true, false, true,
@@ -41,4 +42,41 @@ void MnistClassifier::construct_network() {
      << tanh()
      << fc(120, 10, true, backend_type)  // F6, 120-in, 10-out
      << tanh();
+}
+
+void MnistClassifier::_load_data(const std::string &data_dir_path) {
+    logger->info("loading models");
+    tiny_dnn::parse_mnist_labels(data_dir_path + "/train-labels.idx1-ubyte",
+                               &train_labels);
+    tiny_dnn::parse_mnist_images(data_dir_path + "/train-images.idx3-ubyte",
+                               &train_images, -1.0, 1.0, 2, 2);
+    tiny_dnn::parse_mnist_labels(data_dir_path + "/t10k-labels.idx1-ubyte",
+                               &test_labels);
+    tiny_dnn::parse_mnist_images(data_dir_path + "/t10k-images.idx3-ubyte",
+                               &test_images, -1.0, 1.0, 2, 2);
+    logger->info("models loaded");
+}
+
+void MnistClassifier::train(const int n_train_epochs, const int n_minibatch, double learning_rate) {
+    this->construct_network();
+    logger->info("training config: train_epochs: {:05d}, minibatch: {:05d}, learning rate: {:05d}", n_train_epochs, n_minibatch, learning_rate);
+    logger->info("start training");
+    tiny_dnn::adagrad optimizer;
+    optimizer.alpha *= std::min(tiny_dnn::float_t(4), static_cast<tiny_dnn::float_t>(
+        sqrt(n_minibatch) * learning_rate
+    ));
+    int epoch = 1;
+    tiny_dnn::timer t;
+    auto on_enumerate_epoch = [&]() {
+        logger->info("Epoch: {:02d}/{:06d} finished. {3} sec elapsed.", epoch, n_train_epochs, t.elapsed());
+        ++epoch;
+        tiny_dnn::result res = nn.test(test_images, test_labels);
+        logger->info("success rate: {:05d}/{:05d}", res.num_success, res.num_total);
+        t.restart();
+    };
+    auto on_enumerate_minibatch = [&]() {
+
+    };
+    nn.train<tiny_dnn::mse>(optimizer, train_images,train_labels, n_minibatch, n_train_epochs, on_enumerate_minibatch, on_enumerate_epoch);
+    nn.test(test_images, test_labels).print_detail(std::cout);
 }
