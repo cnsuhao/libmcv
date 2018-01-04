@@ -1,9 +1,10 @@
 #include <iostream>
 #include "Common.h"
 int main() {
-  MnistClassifier mc = new MnistClassifier();
+  MnistClassifier mc = MnistClassifier();
   mc.construct_network();
-  mc._load_data('.');
-  mc.train();
+  const std::string data_path = ".";
+  mc._load_data(data_path);
+  mc.train(30,10,1.0);
   return 0;
 }
