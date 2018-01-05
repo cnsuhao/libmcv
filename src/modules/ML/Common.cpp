@@ -1,6 +1,7 @@
 #include "Common.h"
 MnistClassifier::MnistClassifier() {
     this->logger = Logger::getLogger();
+    this->backend_type = tiny_dnn::core::default_engine();
     bool table_data[] = {
         // clang-format off
         true, false, false, false, true, true, true, false, false, true, true, true, true, false, true, true,
@@ -19,6 +20,7 @@ MnistClassifier::MnistClassifier(tiny_dnn::core::backend_t backend_type) {
 }
 
 void MnistClassifier::construct_network() {
+    logger->info("Constructing Network...");
     using fc = tiny_dnn::layers::fc;
     using conv = tiny_dnn::layers::conv;
     using ave_pool = tiny_dnn::layers::ave_pool;
@@ -27,22 +29,23 @@ void MnistClassifier::construct_network() {
     using tiny_dnn::core::connection_table;
     using padding = tiny_dnn::padding;
 
-    nn  <<  conv(32, 32, 5, 1, 6,   // C1, 1@32x32-in, 6@28x28-out
-            padding::valid, true, 1, 1, backend_type)
+    this->nn  <<  conv(32, 32, 5, 1, 6,   // C1, 1@32x32-in, 6@28x28-out
+            padding::valid, true, 1, 1, this->backend_type)
         <<  tanh()
         <<  ave_pool(28, 28, 6, 2)   // S2, 6@28x28-in, 6@14x14-out
         <<  tanh()
         <<  conv(14, 14, 5, 6, 16,   // C3, 6@14x14-in, 16@10x10-out
             connection_table(tbl, 6, 16),
-            padding::valid, true, 1, 1, backend_type)
-     << tanh()
-     << ave_pool(10, 10, 16, 2)  // S4, 16@10x10-in, 16@5x5-out
-     << tanh()
-     << conv(5, 5, 5, 16, 120,   // C5, 16@5x5-in, 120@1x1-out
-             padding::valid, true, 1, 1, backend_type)
-     << tanh()
-     << fc(120, 10, true, backend_type)  // F6, 120-in, 10-out
-     << tanh();
+            padding::valid, true, 1, 1, this->backend_type)
+        << tanh()
+        << ave_pool(10, 10, 16, 2)  // S4, 16@10x10-in, 16@5x5-out
+        << tanh()
+        << conv(5, 5, 5, 16, 120,   // C5, 16@5x5-in, 120@1x1-out
+             padding::valid, true, 1, 1, this->backend_type)
+        << tanh()
+        << fc(120, 10, true, this->backend_type)  // F6, 120-in, 10-out
+        << tanh();
+    logger->info("Network Constructed");
 }
 
 void MnistClassifier::_load_data(const std::string &data_dir_path) {
@@ -59,7 +62,6 @@ void MnistClassifier::_load_data(const std::string &data_dir_path) {
 }
 
 void MnistClassifier::train(const int n_train_epochs, const int n_minibatch, double learning_rate) {
-    this->construct_network();
     logger->info("training config: train_epochs: {:05d}, minibatch: {:05d}, learning rate: {:05d}", n_train_epochs, n_minibatch, learning_rate);
     logger->info("start training");
     tiny_dnn::adagrad optimizer;
@@ -78,8 +80,8 @@ void MnistClassifier::train(const int n_train_epochs, const int n_minibatch, dou
     auto on_enumerate_minibatch = [&]() {
 
     };
-    nn.train<tiny_dnn::mse>(optimizer, train_images,train_labels, n_minibatch, n_train_epochs, on_enumerate_minibatch, on_enumerate_epoch);
-    nn.test(test_images, test_labels).print_detail(std::cout);
+    this->nn.train<tiny_dnn::mse>(optimizer, train_images,train_labels, n_minibatch, n_train_epochs, on_enumerate_minibatch, on_enumerate_epoch);
+    this->nn.test(test_images, test_labels).print_detail(std::cout);
 }
 
 MnistClassifier::~MnistClassifier() {

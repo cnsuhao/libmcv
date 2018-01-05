@@ -1,5 +1,5 @@
 #include <iostream>
-#include "Common.h"
+#include "../../src/modules/ML/Common.h"
 int main() {
   MnistClassifier mc = MnistClassifier();
   mc.construct_network();
