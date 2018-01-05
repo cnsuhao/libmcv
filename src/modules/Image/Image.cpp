@@ -4,6 +4,10 @@ Image::Image() {
 
 }
 
+bool Image::isGray() {
+    return _isGray;
+}
+ 
 unsigned int Image::getWidth() {
     return width;
 }
@@ -26,19 +30,17 @@ unsigned char* Image::loadFile(std::string filename) {
     JSAMPARRAY buffer;
     int row_stride;
     int rgb_size;
-    unsigned char * tmp_buffer = NULL;
 
     std::shared_ptr<spdlog::logger> logger = Logger::getLogger();
-
 
     if(NULL == (infile=fopen(filename.c_str(),"rb"))) {
         printf("can't open %s\n", filename.c_str());
         return NULL;
     }
-    logger->info("message");
+    
     cinfo.err = jpeg_std_error(&jerr.pub);
     jerr.pub.error_exit = libmcv_jpeg_error_exit;
-    
+
     if(setjmp(jerr.setjmp_buffer)) {
         jpeg_destroy_decompress(&cinfo);
         jpeg_stdio_src(&cinfo,infile);
@@ -47,7 +49,7 @@ unsigned char* Image::loadFile(std::string filename) {
     
     jpeg_create_decompress(&cinfo);
     jpeg_stdio_src(&cinfo,infile);
-    jpeg_read_header(&cinfo, TRUE);
+    jpeg_read_header(&cinfo, true);
     jpeg_start_decompress(&cinfo);
     
     row_stride = cinfo.output_width * cinfo.output_components;
@@ -58,22 +60,33 @@ unsigned char* Image::loadFile(std::string filename) {
     this->size = rgb_size;
     buffer = (*cinfo.mem->alloc_sarray)((j_common_ptr) &cinfo, JPOOL_IMAGE, row_stride,1);
     // Allocate Memory
-    *this->data= (unsigned char*) malloc(sizeof(char)* rgb_size);
+    if(cinfo.output_components == 3) {
+        this->_isGray = false;
+        this->data = new unsigned char[width*height*3+1];
+    } else {
+        this->_isGray = true;
+        this->data = new unsigned char[width*height+1];
+    }
+
+    while(cinfo.output_scanline < cinfo.output_height) {
+        // get every line
+        jpeg_read_scanlines(&cinfo, buffer, 1);
+        for (size_t i=0; i<cinfo.output_width;i++) {
+            if(this->isGray()) {
+                this->data[(cinfo.output_scanline - 1 ) * this->width + i ] = buffer[0][i];
+            } else {
+                this->data[(cinfo.output_scanline - 1) * this->width*3 + i*3] = buffer[0][i * 3];
+                this->data[(cinfo.output_scanline - 1) * this->width*3 + i*3 + 1] = buffer[0][i*3+1];
+                this->data[(cinfo.output_scanline - 1) * this->width*3 + i*3 + 2] = buffer[0][i*3+2];
+            }
+        }
+    }
     // Print Result if it is in Debug Mode
-    if (_LIBMCV_DEV_MODE){
-        printf("debug--:\nrgb_size: %d, size %d, width: %d, height: %d, row_stride: %d\n",rgb_size,
+    logger->info("image loaded: rgb_size: {:05d}, size {:08d}, width: {:05d}, height: {:05d}, row_stride: {:05d}",rgb_size,
         cinfo.image_width*cinfo.image_height*3,
         cinfo.image_width,
         cinfo.image_height,
         row_stride);
-    }
-    tmp_buffer = *this->data;
-    while(cinfo.output_scanline < cinfo.output_height) {
-        // get every line
-        jpeg_read_scanlines(&cinfo, buffer, 1);
-        memcpy(tmp_buffer, buffer[0], row_stride);
-        tmp_buffer += row_stride;
-    }
     jpeg_finish_decompress(&cinfo);
     jpeg_destroy_decompress(&cinfo);
     fclose(infile);

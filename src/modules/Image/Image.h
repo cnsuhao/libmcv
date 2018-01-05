@@ -30,15 +30,17 @@ void libmcv_jpeg_error_exit(j_common_ptr cinfo) {
 
 class Image {
 private:
+    bool _isGray;
     unsigned int width;
     unsigned int height;
     unsigned int size;
-    unsigned char ** data;
+    unsigned char * data;
 public:
     Image();
     unsigned int getWidth();
     unsigned int getHeight();
     unsigned int getSize();
+    bool isGray();
     unsigned char* loadFile(std::string filename);
     ~Image();
 };
